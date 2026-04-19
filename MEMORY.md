@@ -56,3 +56,23 @@ Pointers to plugin packages and their ownership.
   skip provide/inject. Listener lifecycle is bound to the effect scope
   and reacts to the ref flipping to `null`. SSR-safe (no window access
   at setup time; `onMounted` does not fire on the server).
+
+## Compatibility shims
+
+- `@snapdeck/v4-compat` — `packages/v4-compat/` — drop-in shim for
+  fullpage.js v4 migrators. Default export is a `fullpage('#id', opts)`
+  factory returning a V4Api (`moveTo`, `moveSectionUp/Down`,
+  `moveSlideLeft/Right`, `setKeyboardScrolling`, `getActiveSection`,
+  `destroy('all')`, `reBuild`) and writes `window.fullpage_api`.
+  `src/option-map.ts` splits v4 options into snapdeck passthroughs
+  (`anchors`, `scrollingSpeed`, `easing`, `loopTop`, `loopBottom`,
+  `keyboardScrolling`, `fitToSection`, `lazyLoading`, `recordHistory`,
+  `lockAnchors`, `css3`) vs callback keys; unknown keys emit
+  `console.warn`; recognized-but-unimplemented v4 keys (`licenseKey`,
+  `navigation`, `parallax`, …) are silently accepted. `src/callback-
+  bridge.ts` translates v4 positional callback signatures
+  (`afterLoad(origin, destination, direction)` etc.) into snapdeck's
+  payload-object events by unpacking the payload at call time.
+  `setAutoScrolling` / `setAllowScrolling` warn-and-noop because
+  snapdeck's transform renderer has no runtime snap toggle. Clean-room
+  original code — never imports fullpage.js.
