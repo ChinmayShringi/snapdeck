@@ -29,7 +29,11 @@ export function SnapdeckDemo({ slides, plugins, footer }: SnapdeckDemoProps) {
   return (
     <div className="demo-host" ref={ref}>
       {slides.map((slide, idx) => (
-        <section key={idx} className={`demo-section ${slide.className ?? ''}`}>
+        <section
+          key={idx}
+          data-snapdeck-section
+          className={`demo-section ${slide.className ?? ''}`}
+        >
           <div>
             <h2>{slide.title}</h2>
             {slide.body ? <p>{slide.body}</p> : null}
