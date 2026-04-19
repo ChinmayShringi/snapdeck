@@ -16,6 +16,7 @@ import { CLS } from './classes.js';
 
 export interface MountedStructure {
   readonly container: HTMLElement;
+  readonly sectionsTrack: HTMLElement;
   readonly sections: ReadonlyArray<Section>;
   readonly slides: ReadonlyArray<Slide>;
   teardown(): void;
@@ -91,6 +92,18 @@ export function mountStructure(
   }
 
   container.classList.add(CLS.wrapper);
+
+  // Wrap sections in an inner track element. Transforms are applied to this
+  // track, not the container, so the container's overflow:hidden clip box
+  // stays in place while content slides up/down underneath it.
+  const doc = container.ownerDocument;
+  const sectionsTrack = doc.createElement('div');
+  sectionsTrack.classList.add(CLS.sectionsTrack);
+  const firstSection = sectionEls[0]!;
+  container.insertBefore(sectionsTrack, firstSection);
+  for (const sectionEl of sectionEls) {
+    sectionsTrack.appendChild(sectionEl);
+  }
 
   const tracks: TrackRecord[] = [];
   const sections: Section[] = [];
@@ -169,12 +182,22 @@ export function mountStructure(
       section.element.classList.remove(CLS.section);
     }
 
+    // Unwrap the sections track: move sections back as direct children of the
+    // container (in order), then remove the track element.
+    if (sectionsTrack.parentNode === container) {
+      for (const section of frozenSections) {
+        container.insertBefore(section.element, sectionsTrack);
+      }
+      container.removeChild(sectionsTrack);
+    }
+
     container.classList.remove(CLS.wrapper);
     container.classList.remove(CLS.initialized);
   };
 
   return {
     container,
+    sectionsTrack,
     sections: frozenSections,
     slides: frozenSlides,
     teardown,

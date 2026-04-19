@@ -40,12 +40,12 @@ export function ExampleDeck({ sections, plugins, options }: ExampleDeckProps) {
           className={`demo-section ${toneClasses(s.tone)} !p-0`}
         >
           {s.slides && s.slides.length > 0 ? (
-            <div className="relative h-full w-full">
+            <div className="relative h-full w-full overflow-hidden">
               {s.slides.map((sl, j) => (
                 <div
                   key={j}
                   data-snapdeck-slide
-                  className={`absolute inset-0 flex flex-col justify-between p-10 md:p-16 ${toneClasses(sl.tone)}`}
+                  className={`flex h-full w-full flex-col justify-between p-10 md:p-16 ${toneClasses(sl.tone)}`}
                 >
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-70">
                     slide {j + 1} / {s.slides!.length}

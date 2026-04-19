@@ -6,6 +6,7 @@
  */
 export const CLS = {
   wrapper: 'snapdeck',
+  sectionsTrack: 'snapdeck-sections',
   section: 'snapdeck-section',
   slidesTrack: 'snapdeck-slides',
   slide: 'snapdeck-slide',

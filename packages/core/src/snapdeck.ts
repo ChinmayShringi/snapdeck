@@ -279,10 +279,9 @@ export class Snapdeck implements SnapdeckInstance {
         slide.element.classList.remove(CLS.active);
       }
     }
+    // Clear inline transform BEFORE teardown so the track is stripped cleanly.
+    this.structure.sectionsTrack.style.transform = '';
     this.structure.teardown();
-
-    // Reset inline transform.
-    this.container.style.transform = '';
 
     this.bus.clear();
   }
@@ -355,7 +354,7 @@ export class Snapdeck implements SnapdeckInstance {
     const duration = reduced ? 0 : this.options.scrollingSpeed;
 
     return this.queue.run((): Cancellable => {
-      const anim = animateTransformY(this.container, fromY, toY, {
+      const anim = animateTransformY(this.structure.sectionsTrack, fromY, toY, {
         duration,
         easing: this.options.easing,
         reducedMotion: reduced,
@@ -496,7 +495,7 @@ export class Snapdeck implements SnapdeckInstance {
     const height = this.store.getState().height;
     const toY = -index * height;
     this.currentY = toY;
-    this.container.style.transform = `translate3d(0, ${toY}px, 0)`;
+    this.structure.sectionsTrack.style.transform = `translate3d(0, ${toY}px, 0)`;
     this.applyActiveClasses(index);
     this.store.dispatch({ type: 'navigate/end', destination: index });
   }
@@ -578,7 +577,7 @@ export class Snapdeck implements SnapdeckInstance {
       if (idx >= 0) {
         const toY = -idx * rect.height;
         this.currentY = toY;
-        this.container.style.transform = `translate3d(0, ${toY}px, 0)`;
+        this.structure.sectionsTrack.style.transform = `translate3d(0, ${toY}px, 0)`;
       }
       // fitToSection: re-align each active-slide track to the new width.
       // In this transform renderer the user cannot partially scroll, so the

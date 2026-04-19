@@ -12,10 +12,20 @@
   overflow: hidden;
   touch-action: none;
   position: relative;
+}
+
+/*
+ * Sections track: stacks all sections vertically and receives the Y transform.
+ * Keeping the transform off the container means the container's overflow:hidden
+ * clip box stays anchored to the viewport while content slides underneath it.
+ */
+.snapdeck.is-initialized > .snapdeck-sections {
+  position: relative;
+  width: 100%;
   will-change: transform;
 }
 
-.snapdeck.is-initialized > .snapdeck-section {
+.snapdeck.is-initialized > .snapdeck-sections > .snapdeck-section {
   height: 100dvh;
   width: 100%;
   position: relative;
@@ -25,12 +35,13 @@
   box-sizing: border-box;
 }
 
-.snapdeck.is-initialized > .snapdeck-section > .snapdeck-slides {
+.snapdeck.is-initialized .snapdeck-slides {
   /*
    * Flex layout so slides line up in a single row with stable widths; combined
    * with overflow:hidden on the section, this lets the track translate on X
    * without wrapping. Each slide is flex-shrink:0 width:100% so a track of N
-   * slides is N * viewport-width wide.
+   * slides is N * viewport-width wide. Descendant selector (not direct child)
+   * so slides can live inside layout wrappers under the section.
    */
   display: flex;
   flex-direction: row;
@@ -39,17 +50,17 @@
   will-change: transform;
 }
 
-.snapdeck.is-initialized > .snapdeck-section {
+.snapdeck.is-initialized .snapdeck-section {
   overflow: hidden;
 }
 
-.snapdeck.is-initialized > .snapdeck-section > .snapdeck-slides > .snapdeck-slide {
+.snapdeck.is-initialized .snapdeck-slides > .snapdeck-slide {
   flex: 0 0 100%;
   width: 100%;
   height: 100%;
 }
 
-.snapdeck.is-initialized > .snapdeck-section.is-active {
+.snapdeck.is-initialized .snapdeck-section.is-active {
   z-index: 1;
 }
 
@@ -65,7 +76,10 @@
     height: auto;
     overflow: visible;
   }
-  .snapdeck.is-initialized.is-responsive > .snapdeck-section {
+  .snapdeck.is-initialized.is-responsive > .snapdeck-sections > .snapdeck-section {
     height: auto;
+  }
+  .snapdeck.is-initialized.is-responsive > .snapdeck-sections {
+    transform: none !important;
   }
 }

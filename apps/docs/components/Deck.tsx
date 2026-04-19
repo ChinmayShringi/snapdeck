@@ -42,25 +42,19 @@ export function Deck() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/docs/quickstart/"
-              className="group inline-flex items-center gap-2 bg-[var(--color-accent)] px-5 py-3 text-[13px] font-semibold text-[var(--color-accent-ink)] transition-transform hover:-translate-y-[1px] motion-reduce:transition-none motion-reduce:hover:transform-none"
-            >
+            <Link href="/docs/quickstart/" className="btn-primary">
               Get started
-              <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none">→</span>
+              <span aria-hidden="true">→</span>
             </Link>
             <a
               href="https://github.com/ChinmayShringi/snapdeck"
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 border border-[var(--color-rule-strong)] px-5 py-3 text-[13px] font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)]"
+              className="btn-ghost"
             >
               GitHub <span aria-hidden="true">↗</span>
             </a>
-            <Link
-              href="/examples/"
-              className="inline-flex items-center gap-2 px-3 py-3 text-[13px] font-semibold text-[var(--color-ink-dim)] transition-colors hover:text-[var(--color-ink)]"
-            >
+            <Link href="/examples/" className="btn-link">
               See demos
             </Link>
           </div>
@@ -89,7 +83,7 @@ export function Deck() {
               <button
                 type="button"
                 onClick={() => api?.moveSlideLeft()}
-                className="border border-[var(--color-rule-strong)] px-3 py-1.5 text-[var(--color-ink)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] motion-reduce:transition-none"
+                className="border border-[var(--color-rule-strong)] bg-[var(--color-canvas-raised)] px-3 py-1.5 text-[var(--color-ink)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] motion-reduce:transition-none"
                 aria-label="Previous slide"
               >
                 ←
@@ -97,7 +91,7 @@ export function Deck() {
               <button
                 type="button"
                 onClick={() => api?.moveSlideRight()}
-                className="border border-[var(--color-rule-strong)] px-3 py-1.5 text-[var(--color-ink)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] motion-reduce:transition-none"
+                className="border border-[var(--color-rule-strong)] bg-[var(--color-canvas-raised)] px-3 py-1.5 text-[var(--color-ink)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] motion-reduce:transition-none"
                 aria-label="Next slide"
               >
                 →
@@ -105,9 +99,9 @@ export function Deck() {
             </div>
           </div>
 
-          <div className="relative flex-1">
+          <div className="relative flex-1 overflow-hidden">
             {/* Horizontal slides live here */}
-            <div data-snapdeck-slide className="absolute inset-0 flex items-end justify-start bg-[#0f0f0f] p-10 md:p-16">
+            <div data-snapdeck-slide className="flex h-full w-full items-end justify-start bg-[#0f0f0f] p-10 md:p-16">
               <div className="flex w-full items-end justify-between gap-8">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)]">01</div>
@@ -121,7 +115,7 @@ export function Deck() {
                 </div>
               </div>
             </div>
-            <div data-snapdeck-slide className="absolute inset-0 flex items-end justify-start bg-[#111111] p-10 md:p-16">
+            <div data-snapdeck-slide className="flex h-full w-full items-end justify-start bg-[#111111] p-10 md:p-16">
               <div className="flex w-full items-end justify-between gap-8">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)]">02</div>
@@ -135,7 +129,7 @@ export function Deck() {
                 </div>
               </div>
             </div>
-            <div data-snapdeck-slide className="absolute inset-0 flex items-end justify-start bg-[#0d0d0d] p-10 md:p-16">
+            <div data-snapdeck-slide className="flex h-full w-full items-end justify-start bg-[#0d0d0d] p-10 md:p-16">
               <div className="flex w-full items-end justify-between gap-8">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)]">03</div>
@@ -149,7 +143,7 @@ export function Deck() {
                 </div>
               </div>
             </div>
-            <div data-snapdeck-slide className="absolute inset-0 flex flex-col justify-between bg-[var(--color-accent)] p-10 text-[var(--color-accent-ink)] md:p-16">
+            <div data-snapdeck-slide className="flex h-full w-full flex-col justify-between bg-[var(--color-accent)] p-10 text-[var(--color-accent-ink)] md:p-16">
               <div className="font-mono text-[11px] uppercase tracking-[0.2em]">04 · demo</div>
               <div className="font-display text-[clamp(2.5rem,8vw,6rem)] font-bold leading-[0.9] tracking-[-0.03em]">
                 Try it.
@@ -290,17 +284,14 @@ export function Deck() {
                 <span className="text-[var(--color-ink-faint)]">Ship it.</span>
               </h2>
               <div className="mt-10 flex flex-wrap gap-3">
-                <Link
-                  href="/docs/quickstart/"
-                  className="bg-[var(--color-accent)] px-5 py-3 text-[13px] font-semibold text-[var(--color-accent-ink)]"
-                >
+                <Link href="/docs/quickstart/" className="btn-primary">
                   Quickstart →
                 </Link>
                 <a
                   href="https://github.com/ChinmayShringi/snapdeck"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="border border-[var(--color-rule-strong)] px-5 py-3 text-[13px] font-semibold transition-colors hover:border-[var(--color-ink)]"
+                  className="btn-ghost"
                 >
                   Star on GitHub ↗
                 </a>

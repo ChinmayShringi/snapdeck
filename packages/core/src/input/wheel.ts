@@ -40,7 +40,14 @@ export function attachWheelInput(options: WheelInputOptions): WheelInputHandle {
 
     event.preventDefault();
 
+    const now = performance.now();
+
+    // While locked (mid-animation) keep bumping lastFireTime so trackpad inertia
+    // cannot immediately fire a second navigation the moment the animation ends.
+    // The user must actually stop scrolling for `debounceMs` before the next
+    // nav can fire. This prevents the "scroll once, advances twice" feel.
     if (isLocked?.() === true) {
+      lastFireTime = now;
       return;
     }
 
@@ -49,8 +56,8 @@ export function attachWheelInput(options: WheelInputOptions): WheelInputHandle {
       return;
     }
 
-    const now = performance.now();
     if (now - lastFireTime < debounceMs) {
+      lastFireTime = now;
       return;
     }
     lastFireTime = now;
