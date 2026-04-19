@@ -1,0 +1,44 @@
+/**
+ * @snapdeck/plugin-progress-bar — default styles.
+ *
+ * The plugin only writes CSS custom properties (no inline dimensions or colors).
+ * Override any of these on the element or a parent to theme the bar:
+ *
+ *   --snapdeck-progress-thickness: 3px;
+ *   --snapdeck-progress-color: #2b7fff;
+ *   --snapdeck-progress-bg: rgba(0, 0, 0, 0.08);
+ *   --snapdeck-progress-transition: width 240ms ease;
+ *   --snapdeck-progress-value: 0; /* 0..1, written by the plugin */
+ */
+
+.snapdeck-progress-bar {
+  --snapdeck-progress-thickness: 3px;
+  --snapdeck-progress-color: #2b7fff;
+  --snapdeck-progress-bg: rgba(0, 0, 0, 0.08);
+  --snapdeck-progress-transition: width 240ms ease;
+  --snapdeck-progress-value: 0;
+
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: var(--snapdeck-progress-thickness);
+  background: var(--snapdeck-progress-bg);
+  z-index: 2147483000;
+  pointer-events: none;
+}
+
+.snapdeck-progress-bar[data-position='top'] {
+  top: 0;
+}
+
+.snapdeck-progress-bar[data-position='bottom'] {
+  bottom: 0;
+}
+
+.snapdeck-progress-bar__fill {
+  height: 100%;
+  width: calc(100% * var(--snapdeck-progress-value));
+  background: var(--snapdeck-progress-color);
+  transition: var(--snapdeck-progress-transition);
+  will-change: width;
+}
