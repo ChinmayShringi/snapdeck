@@ -1,0 +1,55 @@
+{
+  "name": "@snapdeck/vue",
+  "version": "0.0.0",
+  "description": "Vue 3 bindings for Snapdeck: composables for the section-snap scroll engine.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@snapdeck/core": "workspace:*",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@snapdeck/core": "workspace:*",
+    "@vitest/coverage-v8": "^2.1.5",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^15.11.6",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5",
+    "vue": "^3.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "snapdeck",
+    "vue",
+    "composables",
+    "fullpage",
+    "scroll"
+  ]
+}

@@ -16,6 +16,16 @@ Pointers to plugin packages and their ownership.
   `poster`) for the active section plus `eagerAdjacent` neighbors on
   install and on every `afterLoad`. Idempotent once consumed; `destroy()`
   only detaches the subscription and leaves hydrated DOM in place.
+- `@snapdeck/plugin-observer` — `packages/plugin-observer/` — narrow
+  MutationObserver-based auto-refresh. Observes the Snapdeck container with
+  `childList: true, subtree: false` and debounces `instance.refresh()`
+  (default 100ms) when direct-child nodes matching the section selector are
+  added or removed. Container is resolved via
+  `state.sections[0].element.parentElement` because `SnapdeckInstance` does
+  not expose a container accessor yet. No-op install and no-op destroy when
+  `MutationObserver` is missing; consumers should fall back to explicit
+  `refresh()` calls. See `packages/plugin-observer/README.md` for the
+  tradeoff vs calling `refresh()` yourself.
 
 ## Framework wrappers
 
