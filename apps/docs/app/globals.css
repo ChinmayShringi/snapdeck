@@ -135,10 +135,12 @@ a {
   position: relative;
 }
 
-.demo-section > * {
-  max-width: min(1100px, 100%);
-  width: 100%;
-}
+/*
+ * No forced max-width on direct children. Each section controls its own
+ * content width (usually via an inner `.mx-auto.max-w-[1100px]` wrapper).
+ * This lets full-bleed sections (like horizontal slides and the footer)
+ * actually span the viewport on wide screens.
+ */
 
 /* Section backgrounds: engineered, not decorative */
 .bg-s1 {

@@ -72,14 +72,14 @@ export function Deck() {
         data-anchor="motion"
         className="demo-section bg-s2 !p-0"
       >
-        <div className="flex h-full w-full flex-col">
+        <div className="flex h-full w-full flex-col pt-[var(--nav-h)]">
           <div className="flex items-baseline justify-between border-b border-[var(--color-rule)] px-6 py-4 md:px-10">
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-ink-faint)]">
+            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-ink-dim)]">
               <span>02</span>
               <span>/</span>
               <span>in motion</span>
             </div>
-            <div className="hidden items-center gap-3 font-mono text-[11px] text-[var(--color-ink-faint)] md:flex">
+            <div className="hidden items-center gap-3 font-mono text-[11px] text-[var(--color-ink-dim)] md:flex">
               <button
                 type="button"
                 onClick={() => api?.moveSlideLeft()}
@@ -101,8 +101,8 @@ export function Deck() {
 
           <div className="relative flex-1 overflow-hidden">
             {/* Horizontal slides live here */}
-            <div data-snapdeck-slide className="flex h-full w-full items-end justify-start bg-[#0f0f0f] p-10 md:p-16">
-              <div className="flex w-full items-end justify-between gap-8">
+            <div data-snapdeck-slide className="flex h-full w-full items-center justify-center bg-[#0f0f0f] p-10 md:p-16">
+              <div className="flex w-full max-w-[1100px] items-center justify-between gap-8">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)]">01</div>
                   <div className="mt-2 font-display text-[clamp(2.5rem,8vw,6rem)] font-bold leading-[0.9] tracking-[-0.03em]">
@@ -115,8 +115,8 @@ export function Deck() {
                 </div>
               </div>
             </div>
-            <div data-snapdeck-slide className="flex h-full w-full items-end justify-start bg-[#111111] p-10 md:p-16">
-              <div className="flex w-full items-end justify-between gap-8">
+            <div data-snapdeck-slide className="flex h-full w-full items-center justify-center bg-[#111111] p-10 md:p-16">
+              <div className="flex w-full max-w-[1100px] items-center justify-between gap-8">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)]">02</div>
                   <div className="mt-2 font-display text-[clamp(2.5rem,8vw,6rem)] font-bold leading-[0.9] tracking-[-0.03em]">
@@ -129,8 +129,8 @@ export function Deck() {
                 </div>
               </div>
             </div>
-            <div data-snapdeck-slide className="flex h-full w-full items-end justify-start bg-[#0d0d0d] p-10 md:p-16">
-              <div className="flex w-full items-end justify-between gap-8">
+            <div data-snapdeck-slide className="flex h-full w-full items-center justify-center bg-[#0d0d0d] p-10 md:p-16">
+              <div className="flex w-full max-w-[1100px] items-center justify-between gap-8">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-accent)]">03</div>
                   <div className="mt-2 font-display text-[clamp(2.5rem,8vw,6rem)] font-bold leading-[0.9] tracking-[-0.03em]">
@@ -281,7 +281,7 @@ export function Deck() {
               </div>
               <h2 className="max-w-[900px] font-display text-[clamp(2.5rem,7vw,6rem)] font-bold leading-[0.9] tracking-[-0.03em]">
                 Build it.<br />
-                <span className="text-[var(--color-ink-faint)]">Ship it.</span>
+                <span className="text-[var(--color-ink-dim)]">Ship it.</span>
               </h2>
               <div className="mt-10 flex flex-wrap gap-3">
                 <Link href="/docs/quickstart/" className="btn-primary">
@@ -299,7 +299,7 @@ export function Deck() {
             </div>
           </div>
           <footer className="border-t border-[var(--color-rule)] px-6 py-6 md:px-16">
-            <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-3 font-mono text-[11px] text-[var(--color-ink-faint)] md:flex-row md:items-center md:justify-between">
+            <div className="flex w-full flex-col gap-3 font-mono text-[11px] text-[var(--color-ink-dim)] md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-3">
                 <Logo size={14} className="text-[var(--color-accent)]" />
                 <span>snapdeck</span>
