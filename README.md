@@ -458,6 +458,12 @@ pnpm --filter example-basic-vertical dev
 # open http://localhost:5173
 ```
 
+## Docs
+
+Full documentation, API reference, and live examples: https://chinmayshringi.github.io/snapdeck/
+
+Source lives at [`apps/docs`](./apps/docs/) and deploys via [`.github/workflows/docs.yml`](./.github/workflows/docs.yml).
+
 ## License
 
 MIT. See [LICENSE](./LICENSE).

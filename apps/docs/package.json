@@ -1,0 +1,28 @@
+{
+  "name": "@snapdeck/docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Snapdeck documentation site (Next.js static export, GitHub Pages).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build"
+  },
+  "dependencies": {
+    "@snapdeck/core": "workspace:*",
+    "@snapdeck/react": "workspace:*",
+    "@snapdeck/plugin-nav-dots": "workspace:*",
+    "@snapdeck/plugin-progress-bar": "workspace:*",
+    "@snapdeck/plugin-lazy-media": "workspace:*",
+    "next": "15.1.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Snapdeck">
+  <rect width="64" height="64" rx="12" fill="#0b0d10"/>
+  <rect x="14" y="12" width="36" height="10" rx="3" fill="#3ea6ff"/>
+  <rect x="14" y="27" width="36" height="10" rx="3" fill="#7cc4ff" opacity="0.8"/>
+  <rect x="14" y="42" width="36" height="10" rx="3" fill="#7cc4ff" opacity="0.55"/>
+</svg>
