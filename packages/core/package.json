@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Snapdeck core: framework-agnostic section-snap scroll engine.",
   "license": "MIT",
   "type": "module",

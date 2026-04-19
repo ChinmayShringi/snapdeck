@@ -47,6 +47,18 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
+/*
+ * When a Snapdeck is mounted on the page, prevent the html/body from
+ * scrolling at all. The deck's transform briefly flashes a browser
+ * scrollbar on macOS otherwise, even though the overflow stays inside
+ * the clipped deck container.
+ */
+html:has(.snapdeck.is-initialized),
+body:has(.snapdeck.is-initialized) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 ::selection {
   background: var(--color-accent);
   color: var(--color-accent-ink);

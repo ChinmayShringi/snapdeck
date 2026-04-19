@@ -27,10 +27,19 @@ export interface WheelInputHandle {
 /** Narrow the navigation direction to the up/down subset Direction supports. */
 type VerticalDirection = Extract<Direction, 'up' | 'down'>;
 
+/**
+ * Gap between wheel events (ms) above which we consider a fresh gesture. A
+ * continuous trackpad stream fires every ~16 ms; a real second flick has a
+ * much larger gap. Inertia tails remain in the continuous-stream band, so
+ * this distinguishes "user intent" from "momentum leftover".
+ */
+const NEW_GESTURE_GAP_MS = 120;
+
 export function attachWheelInput(options: WheelInputOptions): WheelInputHandle {
   const { target, debounceMs, onNavigate, shouldIgnore, isLocked } = options;
 
   let lastFireTime = 0;
+  let lastWheelTime = 0;
   let stopped = false;
 
   const handler = (event: WheelEvent): void => {
@@ -41,13 +50,10 @@ export function attachWheelInput(options: WheelInputOptions): WheelInputHandle {
     event.preventDefault();
 
     const now = performance.now();
+    const gapSinceLastWheel = now - lastWheelTime;
+    lastWheelTime = now;
 
-    // While locked (mid-animation) keep bumping lastFireTime so trackpad inertia
-    // cannot immediately fire a second navigation the moment the animation ends.
-    // The user must actually stop scrolling for `debounceMs` before the next
-    // nav can fire. This prevents the "scroll once, advances twice" feel.
     if (isLocked?.() === true) {
-      lastFireTime = now;
       return;
     }
 
@@ -56,8 +62,17 @@ export function attachWheelInput(options: WheelInputOptions): WheelInputHandle {
       return;
     }
 
+    // Treat this event as a new gesture only if there is a meaningful gap
+    // since the previous wheel event. Continuous streams (active scroll, or
+    // post-animation inertia tail) fire far more frequently than this, so
+    // they never re-fire a nav. The very first event after attach has
+    // lastWheelTime = 0, which produces a huge gap and naturally fires.
+    const isNewGesture = gapSinceLastWheel >= NEW_GESTURE_GAP_MS;
+    if (!isNewGesture) {
+      return;
+    }
+
     if (now - lastFireTime < debounceMs) {
-      lastFireTime = now;
       return;
     }
     lastFireTime = now;

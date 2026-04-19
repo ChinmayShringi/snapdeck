@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/vue",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Vue 3 bindings for Snapdeck: composables for the section-snap scroll engine.",
   "license": "MIT",
   "type": "module",

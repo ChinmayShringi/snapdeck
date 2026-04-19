@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/plugin-nav-dots",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Snapdeck plugin: vertical dot navigation strip.",
   "license": "MIT",
   "type": "module",
