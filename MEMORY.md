@@ -37,6 +37,16 @@ Pointers to plugin packages and their ownership.
   (double-invoke guard via instance ref). SSR-safe — no window access at
   module eval. Consumers on Next.js App Router add `"use client"` themselves.
 
+- `@snapdeck/angular` — `packages/angular/` — Angular 18/19/20 bindings.
+  Exposes a single standalone `SnapdeckDirective` (selector `[snapdeck]`,
+  `exportAs: 'snapdeck'`) with an `[options]` input and `(afterLoad)`,
+  `(beforeLeave)`, `(afterRender)` outputs. The core `SnapdeckInstance` is
+  accessible via a `readonly api` getter; template consumers use
+  `#deck="snapdeck"` + `deck.api?.moveDown()`. SSR-safe: `ngOnInit` short-
+  circuits when `isPlatformBrowser(PLATFORM_ID)` is false. Built with tsup
+  (not ng-packagr) for monorepo consistency; consumers on Angular CLI
+  (webpack/esbuild) consume the flat ESM/CJS/d.ts like any library.
+
 - `@snapdeck/vue` — `packages/vue/` — Vue 3.4+ Composition API bindings.
   Exposes `useSnapdeck(options)` (returns `{ containerRef, api }`, both
   refs; instance constructed in `onMounted`, destroyed via
