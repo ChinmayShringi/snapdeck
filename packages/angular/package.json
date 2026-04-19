@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/angular",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Angular bindings for Snapdeck: standalone directive for the section-snap scroll engine.",
   "license": "MIT",
   "type": "module",

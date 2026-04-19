@@ -467,17 +467,12 @@ export class Snapdeck implements SnapdeckInstance {
   }
 
   private resolveSlideTrack(section: Section): HTMLElement | null {
-    // Prefer a direct child to avoid descendants in nested decks. We walk
-    // children rather than use `:scope` selectors for broader DOM support
-    // (e.g. happy-dom test environments).
-    const children = section.element.children;
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i];
-      if (child instanceof HTMLElement && child.classList.contains(CLS.slidesTrack)) {
-        return child;
-      }
-    }
-    return null;
+    // The track may be nested inside layout wrappers (e.g. a flex-col /
+    // flex-1 layout around the slides), so we cannot assume it is a direct
+    // child of the section. Use a descendant query and take the first match
+    // inside this section's subtree.
+    const found = section.element.querySelector(`.${CLS.slidesTrack}`);
+    return found instanceof HTMLElement ? found : null;
   }
 
   private applyActiveSlideClasses(section: Section, activeSlideIdx: number): void {

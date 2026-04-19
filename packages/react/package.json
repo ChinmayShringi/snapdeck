@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React bindings for Snapdeck: hooks and provider for the section-snap scroll engine.",
   "license": "MIT",
   "type": "module",

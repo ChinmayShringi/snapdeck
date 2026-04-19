@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/plugin-observer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Snapdeck plugin: narrow MutationObserver-based auto-refresh when sections are added or removed.",
   "license": "MIT",
   "type": "module",
