@@ -6,3 +6,6 @@
  */
 
 export * from './wheel.js';
+export * from './touch.js';
+export * from './keyboard.js';
+export * from './anchors.js';
