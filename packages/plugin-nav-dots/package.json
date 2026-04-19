@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/plugin-nav-dots",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "description": "Snapdeck plugin: vertical dot navigation strip.",
   "license": "MIT",
   "type": "module",
@@ -50,7 +50,17 @@
   "keywords": [
     "snapdeck",
     "plugin",
-    "navigation",
-    "dots"
-  ]
+    "nav-dots",
+    "pagination"
+  ],
+  "author": "Chinmay Shringi",
+  "homepage": "https://chinmayshringi.github.io/snapdeck/",
+  "bugs": {
+    "url": "https://github.com/ChinmayShringi/snapdeck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChinmayShringi/snapdeck.git",
+    "directory": "packages/plugin-nav-dots"
+  }
 }

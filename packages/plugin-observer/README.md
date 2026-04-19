@@ -1,40 +1,41 @@
 # @snapdeck/plugin-observer
 
-Narrow MutationObserver-based auto-refresh for Snapdeck. When sections are
-added or removed as direct children of the Snapdeck container, the plugin
-debounces and calls `instance.refresh()` for you.
+Narrow MutationObserver-based auto-refresh for [Snapdeck](https://www.npmjs.com/package/@snapdeck/core). When sections are added or removed, the plugin debounces and calls `instance.refresh()` for you, no explicit wire-up needed.
+
+- **Repo**: [github.com/ChinmayShringi/snapdeck](https://github.com/ChinmayShringi/snapdeck)
+- **Docs + live demo**: [chinmayshringi.github.io/snapdeck](https://chinmayshringi.github.io/snapdeck/)
+- **License**: MIT
 
 ## Install
 
 ```bash
-pnpm add @snapdeck/plugin-observer
+npm install @snapdeck/core @snapdeck/plugin-observer
 ```
 
 ## Usage
 
 ```ts
-import { snapdeck } from '@snapdeck/core';
+import snapdeck from '@snapdeck/core';
 import { observer } from '@snapdeck/plugin-observer';
+import '@snapdeck/core/css';
 
-const fp = snapdeck('#fullpage', {
+snapdeck('#deck', {
   plugins: [observer({ debounceMs: 100 })],
 });
 ```
 
 ## Options
 
-| Option            | Type     | Default                       |
-| ----------------- | -------- | ----------------------------- |
-| `debounceMs`      | `number` | `100`                         |
+| Option            | Type     | Default                                 |
+| ----------------- | -------- | --------------------------------------- |
+| `debounceMs`      | `number` | `100`                                   |
 | `sectionSelector` | `string` | `instance.getOption('sectionSelector')` |
 
-## Tradeoff vs explicit `refresh()`
+## When to use it (vs explicit `refresh()`)
 
-Calling `instance.refresh()` yourself after a known DOM change is always
-cheaper and more predictable than observing the DOM. Use this plugin when:
+Calling `instance.refresh()` yourself is always cheaper and more predictable. Use this plugin when:
 
-- Sections are injected by code you do not control (CMS widgets, framework
-  portals, third-party embeds).
+- Sections are injected by code you don't control (CMS widgets, framework portals, third-party embeds).
 - You want defensive auto-recovery from out-of-band DOM mutations.
 
 Prefer explicit `refresh()` when:
@@ -44,17 +45,11 @@ Prefer explicit `refresh()` when:
 
 ## Scope and limitations
 
-- Observes only `childList` on the container, `subtree: false`. Nested subtree
-  changes, attribute changes, and text-only mutations are deliberately
-  ignored.
-- Only mutations whose added/removed nodes match the section selector trigger
-  a refresh. Unrelated sibling nodes are filtered out.
-- Container is resolved as `state.sections[0].element.parentElement`. If there
-  are zero sections at install time, the plugin is a no-op for that instance.
-- If the runtime lacks `MutationObserver` (very old environments, some SSR
-  shims), `install` and `destroy` are both no-ops and you should fall back to
-  explicit `refresh()` calls.
+- Observes only `childList`, `subtree: false`. Attribute and deep-nested changes are deliberately ignored.
+- Only mutations whose added/removed nodes match the section selector trigger a refresh.
+- Container is resolved as `state.sections[0].element.parentElement`. If there are zero sections at install time, the plugin is a no-op.
+- If the runtime lacks `MutationObserver`, `install` and `destroy` are both no-ops.
 
 ## License
 
-MIT
+MIT. Independent clean-room implementation.

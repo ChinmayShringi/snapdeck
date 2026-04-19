@@ -1,9 +1,10 @@
 # @snapdeck/v4-compat
 
-Drop-in compatibility shim for projects migrating from fullpage.js v4 to
-[Snapdeck](https://github.com/chinmayshringi/snapdeck). Preserves the
-`fullpage('#id', {...})` constructor shape, v4 callback signatures, and
-`window.fullpage_api` so existing integration code keeps working.
+Drop-in compatibility shim for projects migrating from fullpage.js v4 to [Snapdeck](https://github.com/ChinmayShringi/snapdeck). Preserves the `fullpage('#id', {...})` constructor shape, v4 callback signatures, and `window.fullpage_api` so existing integration code keeps working.
+
+- **Repo**: [github.com/ChinmayShringi/snapdeck](https://github.com/ChinmayShringi/snapdeck)
+- **Docs + live demo**: [chinmayshringi.github.io/snapdeck](https://chinmayshringi.github.io/snapdeck/)
+- **License**: MIT. Clean-room independent implementation.
 
 This wrapper is clean-room original code. It never imports or reads the
 fullpage.js source. Every behavior is derived from the publicly-documented

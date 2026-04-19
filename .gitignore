@@ -22,3 +22,4 @@ pnpm-debug.log*
 .vscode/*
 !.vscode/settings.json.example
 !.vscode/extensions.json
+.playwright-mcp/

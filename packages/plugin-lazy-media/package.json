@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/plugin-lazy-media",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "description": "Snapdeck plugin: lazy-load media per section using data-src attributes.",
   "license": "MIT",
   "type": "module",
@@ -44,8 +44,17 @@
   "keywords": [
     "snapdeck",
     "plugin",
-    "lazy",
-    "media",
+    "lazy-load",
     "images"
-  ]
+  ],
+  "author": "Chinmay Shringi",
+  "homepage": "https://chinmayshringi.github.io/snapdeck/",
+  "bugs": {
+    "url": "https://github.com/ChinmayShringi/snapdeck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChinmayShringi/snapdeck.git",
+    "directory": "packages/plugin-lazy-media"
+  }
 }

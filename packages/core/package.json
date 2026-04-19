@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/core",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "description": "Snapdeck core: framework-agnostic section-snap scroll engine.",
   "license": "MIT",
   "type": "module",
@@ -49,6 +49,22 @@
     "section",
     "snap",
     "slider",
-    "typescript"
-  ]
+    "typescript",
+    "fullpage-alternative",
+    "fullpagejs",
+    "one-page-scroll",
+    "scroll-snap",
+    "swiper",
+    "embla"
+  ],
+  "author": "Chinmay Shringi",
+  "homepage": "https://chinmayshringi.github.io/snapdeck/",
+  "bugs": {
+    "url": "https://github.com/ChinmayShringi/snapdeck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChinmayShringi/snapdeck.git",
+    "directory": "packages/core"
+  }
 }

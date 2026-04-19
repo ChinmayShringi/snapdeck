@@ -100,7 +100,12 @@ export function mountStructure(
   const sectionsTrack = doc.createElement('div');
   sectionsTrack.classList.add(CLS.sectionsTrack);
   const firstSection = sectionEls[0]!;
-  container.insertBefore(sectionsTrack, firstSection);
+  // Insert the track at the first section's actual parent (usually the
+  // container, but may be a pre-existing wrapper if mountStructure is invoked
+  // on a previously-mounted container). This mirrors the defensive logic used
+  // for the slides track so we never assume a fixed parent.
+  const sectionsTrackParent: ParentNode = firstSection.parentNode ?? container;
+  sectionsTrackParent.insertBefore(sectionsTrack, firstSection);
   for (const sectionEl of sectionEls) {
     sectionsTrack.appendChild(sectionEl);
   }
@@ -182,13 +187,14 @@ export function mountStructure(
       section.element.classList.remove(CLS.section);
     }
 
-    // Unwrap the sections track: move sections back as direct children of the
-    // container (in order), then remove the track element.
-    if (sectionsTrack.parentNode === container) {
+    // Unwrap the sections track: move sections back under the track's parent
+    // (in order), then remove the track element. Symmetric to mount insertion.
+    const trackParent = sectionsTrack.parentNode;
+    if (trackParent !== null) {
       for (const section of frozenSections) {
-        container.insertBefore(section.element, sectionsTrack);
+        trackParent.insertBefore(section.element, sectionsTrack);
       }
-      container.removeChild(sectionsTrack);
+      trackParent.removeChild(sectionsTrack);
     }
 
     container.classList.remove(CLS.wrapper);

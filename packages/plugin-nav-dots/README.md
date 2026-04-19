@@ -1,15 +1,18 @@
 # @snapdeck/plugin-nav-dots
 
-Vertical dot navigation plugin for [Snapdeck](https://www.npmjs.com/package/@snapdeck/core).
-Renders a fixed side strip with one dot per section, kept in sync with the active section.
+Vertical dot-navigation plugin for [Snapdeck](https://www.npmjs.com/package/@snapdeck/core). Renders a fixed side strip with one dot per section, kept in sync with the active section via `aria-current`.
+
+- **Repo**: [github.com/ChinmayShringi/snapdeck](https://github.com/ChinmayShringi/snapdeck)
+- **Docs + live demo**: [chinmayshringi.github.io/snapdeck](https://chinmayshringi.github.io/snapdeck/)
+- **License**: MIT
 
 ## Install
 
-```sh
-pnpm add @snapdeck/core @snapdeck/plugin-nav-dots
+```bash
+npm install @snapdeck/core @snapdeck/plugin-nav-dots
 ```
 
-Import the stylesheet once in your app:
+Import the stylesheet once in your app entry:
 
 ```ts
 import '@snapdeck/plugin-nav-dots/css';
@@ -18,10 +21,12 @@ import '@snapdeck/plugin-nav-dots/css';
 ## Usage
 
 ```ts
-import { snapdeck } from '@snapdeck/core';
+import snapdeck from '@snapdeck/core';
 import { navDots } from '@snapdeck/plugin-nav-dots';
+import '@snapdeck/core/css';
+import '@snapdeck/plugin-nav-dots/css';
 
-snapdeck('#fullpage', {
+snapdeck('#deck', {
   plugins: [
     navDots({
       position: 'right',
@@ -37,18 +42,17 @@ snapdeck('#fullpage', {
 | Option            | Type                | Default   | Description                                            |
 | ----------------- | ------------------- | --------- | ------------------------------------------------------ |
 | `position`        | `'left' \| 'right'` | `'right'` | Side of the viewport the strip is anchored to.         |
-| `tooltips`        | `boolean`           | `false`   | Show the section label on hover/focus.                 |
+| `tooltips`        | `boolean`           | `false`   | Show the section label on hover / focus.               |
 | `showActiveLabel` | `boolean`           | `false`   | Render the current section label next to the strip.    |
 | `className`       | `string`            | `''`      | Extra space-separated classes appended to the `<nav>`. |
 
-Each button's `aria-label` is the section's `anchor` when defined, otherwise
-`Section N` (1-indexed). The active dot carries `aria-current="true"` and an
-`is-active` class.
+## Accessibility
 
-## Screenshots
-
-_(screenshot placeholder — add once the examples site ships visuals)_
+- The strip is wrapped in `<nav aria-label="Snapdeck navigation">`.
+- Each button's `aria-label` is the section's `data-anchor` when defined, otherwise `Section N` (1-indexed).
+- The active dot carries `aria-current="true"` and an `is-active` class.
+- Full keyboard support: focusable buttons fire `moveTo(index)` on click / space / enter.
 
 ## License
 
-MIT
+MIT. Independent clean-room implementation.

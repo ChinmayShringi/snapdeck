@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/plugin-progress-bar",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "description": "Snapdeck plugin: top/bottom reading progress bar driven by section index.",
   "license": "MIT",
   "type": "module",
@@ -49,7 +49,16 @@
   "keywords": [
     "snapdeck",
     "plugin",
-    "progress-bar",
-    "fullpage"
-  ]
+    "progress-bar"
+  ],
+  "author": "Chinmay Shringi",
+  "homepage": "https://chinmayshringi.github.io/snapdeck/",
+  "bugs": {
+    "url": "https://github.com/ChinmayShringi/snapdeck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChinmayShringi/snapdeck.git",
+    "directory": "packages/plugin-progress-bar"
+  }
 }

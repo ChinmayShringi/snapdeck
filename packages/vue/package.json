@@ -1,6 +1,6 @@
 {
   "name": "@snapdeck/vue",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "description": "Vue 3 bindings for Snapdeck: composables for the section-snap scroll engine.",
   "license": "MIT",
   "type": "module",
@@ -46,10 +46,22 @@
     "access": "public"
   },
   "keywords": [
-    "snapdeck",
     "vue",
-    "composables",
+    "vue3",
     "fullpage",
-    "scroll"
-  ]
+    "scroll",
+    "section",
+    "snap",
+    "composables"
+  ],
+  "author": "Chinmay Shringi",
+  "homepage": "https://chinmayshringi.github.io/snapdeck/",
+  "bugs": {
+    "url": "https://github.com/ChinmayShringi/snapdeck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChinmayShringi/snapdeck.git",
+    "directory": "packages/vue"
+  }
 }

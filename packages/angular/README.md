@@ -1,34 +1,26 @@
 # @snapdeck/angular
 
-Angular bindings for [Snapdeck](https://github.com/) — a modern section-snap
-scroll engine. Ships a single standalone directive that wires a Snapdeck
-instance to the host element and exposes the engine via `exportAs`.
+Angular bindings for [Snapdeck](https://github.com/ChinmayShringi/snapdeck), a framework-agnostic section-snap scroll library. Ships a single standalone directive that wires a Snapdeck instance to the host element and exposes the engine via `exportAs`. Supports Angular 18, 19, 20.
 
-Supports Angular 18, 19, and 20.
+- **Repo**: [github.com/ChinmayShringi/snapdeck](https://github.com/ChinmayShringi/snapdeck)
+- **Docs + live demo**: [chinmayshringi.github.io/snapdeck](https://chinmayshringi.github.io/snapdeck/)
+- **License**: MIT. Independent clean-room implementation (not derived from any GPL scroll library).
+
+SSR-safe via `isPlatformBrowser`, works with Angular Universal / Analog.
 
 ## Install
 
 ```bash
-pnpm add @snapdeck/angular @snapdeck/core
+npm install @snapdeck/angular @snapdeck/core
+# peers: @angular/core >=18, @angular/common >=18, rxjs >=7
 ```
-
-## Build tooling note
-
-This package is built with [tsup](https://tsup.egoist.dev) (not ng-packagr) to
-stay consistent with the rest of the Snapdeck monorepo. It emits flat ESM,
-CJS, and `.d.ts` with an `es2022` target. Angular CLI (webpack or esbuild)
-consumes it like any other published library; no Angular-specific build
-metadata is required for a library this thin.
 
 ## Usage
 
 ```ts
-// app.component.ts
 import { Component } from '@angular/core';
-import {
-  SnapdeckDirective,
-  type NavigationPayload,
-} from '@snapdeck/angular';
+import { SnapdeckDirective, type NavigationPayload } from '@snapdeck/angular';
+import '@snapdeck/core/css';
 
 @Component({
   standalone: true,
@@ -38,16 +30,17 @@ import {
     <div
       snapdeck
       #deck="snapdeck"
-      [options]="{ anchors: ['intro', 'features', 'pricing'] }"
+      [options]="{ anchors: ['intro', 'features', 'pricing'], scrollingSpeed: 700 }"
       (afterLoad)="onAfterLoad($event)"
       (beforeLeave)="onBeforeLeave($event)"
     >
-      <section class="snapdeck-section">Intro</section>
-      <section class="snapdeck-section">Features</section>
-      <section class="snapdeck-section">Pricing</section>
+      <section data-snapdeck-section data-anchor="intro">Intro</section>
+      <section data-snapdeck-section data-anchor="features">Features</section>
+      <section data-snapdeck-section data-anchor="pricing">Pricing</section>
     </div>
 
-    <button (click)="deck.api?.moveDown()">Next</button>
+    <button (click)="deck.api?.moveSectionDown()">Next</button>
+    <button (click)="deck.api?.moveTo('pricing')">Jump to pricing</button>
   `,
 })
 export class AppComponent {
@@ -55,29 +48,42 @@ export class AppComponent {
     console.log('arrived at', payload.destination.anchor);
   }
   onBeforeLeave(payload: NavigationPayload) {
-    console.log('leaving', payload.origin.anchor);
+    // Return `false` from a handler hooked via `deck.api.on('beforeLeave', …)`
+    // to cancel; the `(beforeLeave)` Output is purely informational.
   }
 }
 ```
 
-## SSR
+### With plugins
 
-`ngOnInit` checks `PLATFORM_ID` via `isPlatformBrowser` and only constructs
-the Snapdeck instance in the browser. Safe for Angular Universal / Analog.
+```ts
+import { navDots } from '@snapdeck/plugin-nav-dots';
+import { progressBar } from '@snapdeck/plugin-progress-bar';
+
+template: `
+  <div snapdeck [options]="deckOptions">…</div>
+`;
+
+deckOptions = {
+  plugins: [navDots(), progressBar({ position: 'top' })],
+};
+```
 
 ## API
 
-- `SnapdeckDirective` — standalone directive, selector `[snapdeck]`,
-  `exportAs: 'snapdeck'`.
+- `SnapdeckDirective`, standalone directive, selector `[snapdeck]`, `exportAs: 'snapdeck'`.
   - `@Input() options: Partial<SnapdeckOptions>`
   - `@Output() afterLoad: EventEmitter<NavigationPayload>`
   - `@Output() beforeLeave: EventEmitter<NavigationPayload>`
   - `@Output() afterRender: EventEmitter<{ activeSection: Section }>`
-  - `readonly api: SnapdeckInstance | null` — full core API once mounted.
+  - `readonly api: SnapdeckInstance | null`, full core API once mounted.
 
-Use `deck.api?.moveTo(...)`, `deck.api?.setOption(...)`, etc. for imperative
-control.
+For imperative control use `deck.api?.moveTo(...)`, `deck.api?.setOption(...)`, etc.
+
+## Build note
+
+Built with [tsup](https://tsup.egoist.dev) (not ng-packagr) to stay consistent with the rest of the Snapdeck monorepo. Emits flat ESM + CJS + `.d.ts` at `es2022`. Angular CLI (webpack or esbuild) consumes it like any other published library.
 
 ## License
 
-MIT
+MIT. Independent clean-room implementation.
