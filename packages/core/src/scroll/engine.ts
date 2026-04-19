@@ -50,6 +50,10 @@ function transformKeyframe(y: number): string {
   return `translate3d(0, ${y}px, 0)`;
 }
 
+function transformKeyframeX(x: number): string {
+  return `translate3d(${x}px, 0, 0)`;
+}
+
 function hasAnimateSupport(target: HTMLElement): boolean {
   // Guard for environments (e.g. happy-dom without stub) where Element.animate
   // is missing. We check both the prototype (feature detect) and the instance
@@ -130,6 +134,87 @@ export function animateTransformY(
     },
     (err: unknown) => {
       // `animation.finished` rejects on cancel with an AbortError.
+      state.cancelled = true;
+      const reason =
+        err instanceof Error && err.name === ABORT_ERROR_NAME
+          ? err
+          : createAbortError();
+      throw reason;
+    },
+  );
+
+  return {
+    promise,
+    cancel: () => {
+      if (state.finished || state.cancelled) return;
+      state.cancelled = true;
+      animation.cancel();
+    },
+    get finished() {
+      return state.finished;
+    },
+    get cancelled() {
+      return state.cancelled;
+    },
+  };
+}
+
+/**
+ * Animate an element from `fromX` to `toX` on the X axis using translate3d.
+ * Mirrors {@link animateTransformY} for horizontal slide navigation.
+ */
+export function animateTransformX(
+  target: HTMLElement,
+  fromX: number,
+  toX: number,
+  opts: AnimateOptions,
+): ScrollAnimation {
+  const { duration, easing, reducedMotion = false } = opts;
+
+  const state = {
+    finished: false,
+    cancelled: false,
+  };
+
+  const instant =
+    reducedMotion === true || duration === 0 || !hasAnimateSupport(target);
+
+  if (instant) {
+    target.style.transform = transformKeyframeX(toX);
+    state.finished = true;
+    return {
+      promise: Promise.resolve(),
+      cancel: () => {
+        /* no-op after instant resolve */
+      },
+      get finished() {
+        return state.finished;
+      },
+      get cancelled() {
+        return state.cancelled;
+      },
+    };
+  }
+
+  const animation = target.animate(
+    [
+      { transform: transformKeyframeX(fromX) },
+      { transform: transformKeyframeX(toX) },
+    ],
+    { duration, easing, fill: 'forwards' },
+  );
+
+  const promise = animation.finished.then(
+    () => {
+      try {
+        animation.commitStyles();
+      } catch {
+        target.style.transform = transformKeyframeX(toX);
+      }
+      animation.cancel();
+      state.finished = true;
+    },
+    (err: unknown) => {
       state.cancelled = true;
       const reason =
         err instanceof Error && err.name === ABORT_ERROR_NAME

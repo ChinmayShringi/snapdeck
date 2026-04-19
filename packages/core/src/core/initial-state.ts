@@ -16,5 +16,6 @@ export function createInitialState(): SnapdeckState {
     height: 0,
     scrollY: 0,
     scrollX: 0,
+    activeSlidePerSection: [],
   };
 }

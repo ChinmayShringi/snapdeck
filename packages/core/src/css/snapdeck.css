@@ -26,14 +26,25 @@
 }
 
 .snapdeck.is-initialized > .snapdeck-section > .snapdeck-slides {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 100%;
+  /*
+   * Flex layout so slides line up in a single row with stable widths; combined
+   * with overflow:hidden on the section, this lets the track translate on X
+   * without wrapping. Each slide is flex-shrink:0 width:100% so a track of N
+   * slides is N * viewport-width wide.
+   */
+  display: flex;
+  flex-direction: row;
   width: 100%;
   height: 100%;
+  will-change: transform;
+}
+
+.snapdeck.is-initialized > .snapdeck-section {
+  overflow: hidden;
 }
 
 .snapdeck.is-initialized > .snapdeck-section > .snapdeck-slides > .snapdeck-slide {
+  flex: 0 0 100%;
   width: 100%;
   height: 100%;
 }

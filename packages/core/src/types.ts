@@ -62,6 +62,11 @@ export interface SnapdeckState {
   readonly height: number;
   readonly scrollY: number;
   readonly scrollX: number;
+  /**
+   * Active slide index per section, aligned to `sections` by position.
+   * An entry of 0 means "first slide" (or "no slides" when the section has none).
+   */
+  readonly activeSlidePerSection: ReadonlyArray<number>;
 }
 
 export interface SnapdeckOptions {

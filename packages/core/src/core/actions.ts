@@ -51,6 +51,12 @@ export interface CanScrollSetAction {
   readonly canScroll: boolean;
 }
 
+export interface SlideSetAction {
+  readonly type: 'slide/set';
+  readonly sectionIndex: number;
+  readonly slideIndex: number;
+}
+
 export type Action =
   | StructureSetAction
   | NavigateStartAction
@@ -59,4 +65,5 @@ export type Action =
   | ResizeAction
   | ResponsiveSetAction
   | ScrollSetAction
-  | CanScrollSetAction;
+  | CanScrollSetAction
+  | SlideSetAction;

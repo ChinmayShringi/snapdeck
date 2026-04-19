@@ -8,6 +8,7 @@ export type {
   ResponsiveSetAction,
   ScrollSetAction,
   CanScrollSetAction,
+  SlideSetAction,
 } from './actions.js';
 export { createInitialState } from './initial-state.js';
 export { reduce } from './reducer.js';

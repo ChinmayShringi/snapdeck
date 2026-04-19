@@ -17,7 +17,15 @@ export function reduce(state: SnapdeckState, action: Action): SnapdeckState {
       if (state.sections === action.sections && state.slides === action.slides) {
         return state;
       }
-      return { ...state, sections: action.sections, slides: action.slides };
+      // Reset active-slide-per-section to zero for each section. New array
+      // preserves immutability.
+      const activeSlidePerSection = action.sections.map(() => 0);
+      return {
+        ...state,
+        sections: action.sections,
+        slides: action.slides,
+        activeSlidePerSection,
+      };
     }
 
     case 'navigate/start': {
@@ -69,6 +77,19 @@ export function reduce(state: SnapdeckState, action: Action): SnapdeckState {
     case 'canScroll/set': {
       if (state.canScroll === action.canScroll) return state;
       return { ...state, canScroll: action.canScroll };
+    }
+
+    case 'slide/set': {
+      const { sectionIndex, slideIndex } = action;
+      if (sectionIndex < 0 || sectionIndex >= state.activeSlidePerSection.length) {
+        return state;
+      }
+      if (state.activeSlidePerSection[sectionIndex] === slideIndex) {
+        return state;
+      }
+      const next = state.activeSlidePerSection.slice();
+      next[sectionIndex] = slideIndex;
+      return { ...state, activeSlidePerSection: next };
     }
   }
 }

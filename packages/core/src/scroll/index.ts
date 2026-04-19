@@ -6,5 +6,5 @@
  * and appended here.
  */
 
-export { animateTransformY } from './engine.js';
+export { animateTransformY, animateTransformX } from './engine.js';
 export type { AnimateOptions, ScrollAnimation } from './engine.js';

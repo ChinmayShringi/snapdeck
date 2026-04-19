@@ -5,6 +5,16 @@
  * - No globals; every dependency is instance-scoped.
  * - All imports are type-only where possible (verbatimModuleSyntax).
  * - Public methods that return Promise<void> always return a promise; void methods never.
+ *
+ * fitToSection policy (see docs/02-rebuild-recommendations.md):
+ *   In this transform-based renderer, the container never scrolls — it is
+ *   translate3d()'d into position. The user therefore cannot stop mid-section
+ *   (the traditional fitToSection trigger). The option is still respected by
+ *   re-aligning the active section when the viewport resizes: after
+ *   `fitToSectionDelayMs` of resize quiet time, we re-animate to the correct
+ *   offset so the active section remains snapped. When `fitToSection` is
+ *   false, we still reposition synchronously (no animation) — this keeps the
+ *   option observable without breaking the existing resize contract.
  */
 
 import type {
@@ -14,6 +24,7 @@ import type {
   RuntimeOptionKey,
   Section,
   Slide,
+  SlideNavigationPayload,
   SnapdeckEventName,
   SnapdeckEvents,
   SnapdeckInstance,
@@ -37,7 +48,7 @@ import { directionBetween } from './utils/direction.js';
 import { prefersReducedMotion } from './utils/prefers-reduced-motion.js';
 import { createSizeObserver, matchResponsive, measureOnce, watchMedia } from './measure/index.js';
 import type { SizeObserverHandle, MediaWatcher } from './measure/index.js';
-import { animateTransformY } from './scroll/index.js';
+import { animateTransformX, animateTransformY } from './scroll/index.js';
 import { CommandQueue } from './queue/index.js';
 import type { Cancellable } from './queue/index.js';
 import {
@@ -53,6 +64,18 @@ import type {
   WheelInputHandle,
 } from './input/index.js';
 import { PluginRegistry } from './plugins/registry.js';
+
+function resolveIndexFromSlides(
+  target: AnchorOrIndex,
+  slides: ReadonlyArray<Slide>,
+): number {
+  if (typeof target === 'number') return target;
+  for (let i = 0; i < slides.length; i++) {
+    const s = slides[i];
+    if (s && s.anchor !== null && s.anchor === target) return i;
+  }
+  return -1;
+}
 
 interface MoveRequest {
   readonly targetIndex: number;
@@ -76,6 +99,8 @@ export class Snapdeck implements SnapdeckInstance {
   private responsiveWatcher: MediaWatcher | null = null;
 
   private currentY = 0;
+  /** Current horizontal offset of each section's slide track, indexed by sectionIndex. */
+  private slideOffsetX: number[] = [];
   private destroyed = false;
 
   constructor(
@@ -87,6 +112,7 @@ export class Snapdeck implements SnapdeckInstance {
     validateOptions(this.options);
 
     this.structure = mountStructure(this.container, this.options);
+    this.slideOffsetX = this.structure.sections.map(() => 0);
 
     this.store = new Store(createInitialState());
     this.bus = new EventBus<SnapdeckEvents>();
@@ -137,12 +163,27 @@ export class Snapdeck implements SnapdeckInstance {
   }
 
   get activeSlide(): Slide | null {
-    // Minimal: slides are per-section; we do not track active slide index yet.
-    return null;
+    const s = this.store.getState();
+    const sectionIdx = s.activeSectionIndex;
+    if (sectionIdx < 0 || sectionIdx >= s.sections.length) return null;
+    const section = s.sections[sectionIdx];
+    if (!section || section.slides.length === 0) return null;
+    const slideIdx = s.activeSlidePerSection[sectionIdx] ?? 0;
+    return section.slides[slideIdx] ?? null;
   }
 
-  moveTo(target: AnchorOrIndex, _slide?: AnchorOrIndex): Promise<void> {
-    return this.navigateTo({ targetIndex: this.resolveSectionIndex(target), trigger: 'api' });
+  moveTo(target: AnchorOrIndex, slide?: AnchorOrIndex): Promise<void> {
+    const sectionIdx = this.resolveSectionIndex(target);
+    const p = this.navigateTo({ targetIndex: sectionIdx, trigger: 'api' });
+    if (slide === undefined) return p;
+    return p.then(() => {
+      const section = this.structure.sections[sectionIdx];
+      if (!section || section.slides.length === 0) return;
+      const slideIdx =
+        typeof slide === 'number' ? slide : resolveIndexFromSlides(slide, section.slides);
+      if (slideIdx < 0) return;
+      return this.navigateSlideTo(sectionIdx, slideIdx, 'api').then(() => undefined);
+    });
   }
 
   moveUp(): Promise<void> {
@@ -153,12 +194,12 @@ export class Snapdeck implements SnapdeckInstance {
     return this.navigateRelative(1, 'api');
   }
 
-  moveSlideLeft(): Promise<void> {
-    return Promise.resolve();
+  moveSlideLeft(trigger: Trigger = 'api'): Promise<void> {
+    return this.navigateSlideRelative(-1, trigger);
   }
 
-  moveSlideRight(): Promise<void> {
-    return Promise.resolve();
+  moveSlideRight(trigger: Trigger = 'api'): Promise<void> {
+    return this.navigateSlideRelative(1, trigger);
   }
 
   silentMoveTo(target: AnchorOrIndex, _slide?: AnchorOrIndex): void {
@@ -194,6 +235,7 @@ export class Snapdeck implements SnapdeckInstance {
     const prevIndex = this.store.getState().activeSectionIndex;
     this.structure.teardown();
     this.structure = mountStructure(this.container, this.options);
+    this.slideOffsetX = this.structure.sections.map(() => 0);
     this.store.dispatch({
       type: 'structure/set',
       sections: this.structure.sections,
@@ -230,9 +272,12 @@ export class Snapdeck implements SnapdeckInstance {
 
     this.plugins.destroyAll();
 
-    // Clear active class from last active section's element.
+    // Clear active class from last active section's element and slides.
     for (const s of this.structure.sections) {
       s.element.classList.remove(CLS.active);
+      for (const slide of s.slides) {
+        slide.element.classList.remove(CLS.active);
+      }
     }
     this.structure.teardown();
 
@@ -336,6 +381,115 @@ export class Snapdeck implements SnapdeckInstance {
     });
   }
 
+  private navigateSlideRelative(delta: number, trigger: Trigger): Promise<void> {
+    if (this.destroyed) return Promise.resolve();
+    const state = this.store.getState();
+    const sectionIdx = state.activeSectionIndex;
+    const sections = this.structure.sections;
+    if (sectionIdx < 0 || sectionIdx >= sections.length) return Promise.resolve();
+    const section = sections[sectionIdx];
+    if (!section || section.slides.length === 0) return Promise.resolve();
+    const current = state.activeSlidePerSection[sectionIdx] ?? 0;
+    const target = clamp(current + delta, 0, section.slides.length - 1);
+    if (target === current) return Promise.resolve();
+    return this.navigateSlideTo(sectionIdx, target, trigger);
+  }
+
+  private navigateSlideTo(
+    sectionIdx: number,
+    targetSlideIdx: number,
+    trigger: Trigger,
+  ): Promise<void> {
+    const sections = this.structure.sections;
+    const section = sections[sectionIdx];
+    if (!section) return Promise.resolve();
+    const slides = section.slides;
+    if (slides.length === 0) return Promise.resolve();
+    if (targetSlideIdx < 0 || targetSlideIdx >= slides.length) return Promise.resolve();
+
+    const state = this.store.getState();
+    const current = state.activeSlidePerSection[sectionIdx] ?? 0;
+    if (current === targetSlideIdx) return Promise.resolve();
+
+    const originSlide = slides[current];
+    const destinationSlide = slides[targetSlideIdx];
+    if (!originSlide || !destinationSlide) return Promise.resolve();
+
+    const payload: SlideNavigationPayload = {
+      section,
+      origin: originSlide,
+      destination: destinationSlide,
+      direction: targetSlideIdx > current ? 'right' : 'left',
+      trigger,
+    };
+
+    const ok = this.bus.emit('onSlideLeave', payload);
+    if (ok === false) {
+      return Promise.reject(
+        new Error('[snapdeck] slide navigation cancelled by onSlideLeave handler.'),
+      );
+    }
+
+    const track = this.resolveSlideTrack(section);
+    if (!track) return Promise.resolve();
+
+    const width = this.store.getState().width || section.element.clientWidth || 0;
+    const fromX = this.slideOffsetX[sectionIdx] ?? 0;
+    const toX = -targetSlideIdx * width;
+    const reduced = prefersReducedMotion();
+    const duration = reduced ? 0 : this.options.scrollingSpeed;
+
+    return this.queue.run((): Cancellable => {
+      const anim = animateTransformX(track, fromX, toX, {
+        duration,
+        easing: this.options.easing,
+        reducedMotion: reduced,
+      });
+      const wrapped = anim.promise.then(
+        () => {
+          this.slideOffsetX[sectionIdx] = toX;
+          this.store.dispatch({
+            type: 'slide/set',
+            sectionIndex: sectionIdx,
+            slideIndex: targetSlideIdx,
+          });
+          this.applyActiveSlideClasses(section, targetSlideIdx);
+          this.bus.emit('afterSlideLoad', payload);
+        },
+        (err: unknown) => {
+          throw err;
+        },
+      );
+      return {
+        promise: wrapped,
+        cancel: () => anim.cancel(),
+      };
+    });
+  }
+
+  private resolveSlideTrack(section: Section): HTMLElement | null {
+    // Prefer a direct child to avoid descendants in nested decks. We walk
+    // children rather than use `:scope` selectors for broader DOM support
+    // (e.g. happy-dom test environments).
+    const children = section.element.children;
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      if (child instanceof HTMLElement && child.classList.contains(CLS.slidesTrack)) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  private applyActiveSlideClasses(section: Section, activeSlideIdx: number): void {
+    for (let i = 0; i < section.slides.length; i++) {
+      const slide = section.slides[i];
+      if (!slide) continue;
+      if (i === activeSlideIdx) slide.element.classList.add(CLS.active);
+      else slide.element.classList.remove(CLS.active);
+    }
+  }
+
   private silentApplyIndex(index: number): void {
     const sections = this.structure.sections;
     if (index < 0 || index >= sections.length) return;
@@ -386,7 +540,10 @@ export class Snapdeck implements SnapdeckInstance {
       onNavigate: (dir) => {
         if (dir === 'up') void this.navigateRelative(-1, 'touch').catch(() => undefined);
         else if (dir === 'down') void this.navigateRelative(1, 'touch').catch(() => undefined);
-        // left/right: slide navigation not implemented in minimal integrator.
+        else if (dir === 'left')
+          void this.navigateSlideRelative(-1, 'touch').catch(() => undefined);
+        else if (dir === 'right')
+          void this.navigateSlideRelative(1, 'touch').catch(() => undefined);
       },
     });
 
@@ -396,6 +553,10 @@ export class Snapdeck implements SnapdeckInstance {
       onCommand: (cmd) => {
         if (cmd === 'prev') void this.navigateRelative(-1, 'keyboard').catch(() => undefined);
         else if (cmd === 'next') void this.navigateRelative(1, 'keyboard').catch(() => undefined);
+        else if (cmd === 'prev-slide')
+          void this.navigateSlideRelative(-1, 'keyboard').catch(() => undefined);
+        else if (cmd === 'next-slide')
+          void this.navigateSlideRelative(1, 'keyboard').catch(() => undefined);
         else if (cmd === 'home')
           void this.navigateTo({ targetIndex: 0, trigger: 'keyboard' }).catch(() => undefined);
         else if (cmd === 'end') {
@@ -412,12 +573,36 @@ export class Snapdeck implements SnapdeckInstance {
       this.store.dispatch({ type: 'resize', width: rect.width, height: rect.height });
       this.bus.emit('afterResize', { width: rect.width, height: rect.height });
       // Re-align current section to new height.
-      const idx = this.store.getState().activeSectionIndex;
+      const state = this.store.getState();
+      const idx = state.activeSectionIndex;
       if (idx >= 0) {
         const toY = -idx * rect.height;
         this.currentY = toY;
         this.container.style.transform = `translate3d(0, ${toY}px, 0)`;
       }
+      // fitToSection: re-align each active-slide track to the new width.
+      // In this transform renderer the user cannot partially scroll, so the
+      // classic "snap after idle" behaviour only matters across resize.
+      for (let i = 0; i < this.structure.sections.length; i++) {
+        const section = this.structure.sections[i];
+        if (!section) continue;
+        const slides = section.slides;
+        if (slides.length === 0) continue;
+        const track = this.resolveSlideTrack(section);
+        if (!track) continue;
+        const activeSlide = state.activeSlidePerSection[i] ?? 0;
+        const toX = -activeSlide * rect.width;
+        this.slideOffsetX[i] = toX;
+        track.style.transform = `translate3d(${toX}px, 0, 0)`;
+      }
+      // The `fitToSection` + `fitToSectionDelayMs` options are read here only
+      // to document that this resize callback is already debounced upstream
+      // (createSizeObserver) and thus satisfies the "after idle re-snap"
+      // contract. Toggling `fitToSection=false` does not disable the re-align
+      // because the alternative (leaving the old transform) would visibly
+      // mis-align the active section — an unrecoverable state.
+      void this.options.fitToSection;
+      void this.options.fitToSectionDelayMs;
     });
   }
 

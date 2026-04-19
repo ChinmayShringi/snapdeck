@@ -74,6 +74,7 @@ describe('createInitialState', () => {
       height: 0,
       scrollY: 0,
       scrollX: 0,
+      activeSlidePerSection: [],
     });
   });
 });
