@@ -11,4 +11,5 @@ export default defineConfig({
   treeshake: true,
   splitting: false,
   outDir: 'dist',
+  onSuccess: 'node scripts/copy-css.mjs',
 });

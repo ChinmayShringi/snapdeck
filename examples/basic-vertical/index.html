@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snapdeck · basic vertical demo</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, sans-serif;
+        color: white;
+      }
+      h1 {
+        font-size: 4rem;
+        margin: 0;
+        text-align: center;
+      }
+      #deck > section:nth-child(1) {
+        background: #1f3a68;
+      }
+      #deck > section:nth-child(2) {
+        background: #2e7d5b;
+      }
+      #deck > section:nth-child(3) {
+        background: #a94e3a;
+      }
+      #deck > section:nth-child(4) {
+        background: #5b3a74;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="deck">
+      <section data-snapdeck-section data-anchor="first"><h1>First</h1></section>
+      <section data-snapdeck-section data-anchor="second"><h1>Second</h1></section>
+      <section data-snapdeck-section data-anchor="third"><h1>Third</h1></section>
+      <section data-snapdeck-section data-anchor="fourth"><h1>Fourth</h1></section>
+    </div>
+    <script type="module" src="./script.ts"></script>
+  </body>
+</html>

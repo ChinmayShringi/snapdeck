@@ -1,10 +1,10 @@
 /**
  * @snapdeck/core
  *
- * Public entry point. The implementation is assembled from modules in:
+ * Public entry point. Wires together the modules in:
  *   - core/     store, events, options
  *   - dom/      mount, measure, styles
- *   - scroll/   engine, navigate, queue
+ *   - scroll/   engine
  *   - input/    wheel, touch, keyboard, anchors
  *   - plugins/  pluggable extensions
  */
@@ -29,12 +29,17 @@ export type {
   Unsubscribe,
 } from './types.js';
 
+import type { SnapdeckInstance, SnapdeckOptions } from './types.js';
+import { Snapdeck } from './snapdeck.js';
+
+export { Snapdeck } from './snapdeck.js';
+
 /**
- * Placeholder factory. Replaced in Wave 5 when the integrator wires modules together.
+ * Factory: create a Snapdeck instance bound to the given container.
  */
 export default function snapdeck(
-  _container: string | HTMLElement,
-  _options?: Partial<import('./types.js').SnapdeckOptions>,
-): import('./types.js').SnapdeckInstance {
-  throw new Error('snapdeck: not yet implemented (scaffold only)');
+  container: string | HTMLElement,
+  options?: Partial<SnapdeckOptions>,
+): SnapdeckInstance {
+  return new Snapdeck(container, options);
 }
