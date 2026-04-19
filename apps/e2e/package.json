@@ -1,0 +1,19 @@
+{
+  "name": "@snapdeck/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Playwright end-to-end tests for Snapdeck, executed against the basic-vertical Vite demo.",
+  "scripts": {
+    "test": "playwright test",
+    "test:ci": "playwright test --reporter=github",
+    "install-browsers": "playwright install --with-deps chromium"
+  },
+  "dependencies": {
+    "@snapdeck/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "vite": "^5.4.10"
+  }
+}
