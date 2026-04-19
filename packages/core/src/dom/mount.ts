@@ -24,6 +24,7 @@ export interface MountedStructure {
 interface TrackRecord {
   readonly track: HTMLElement;
   readonly section: HTMLElement;
+  readonly trackParent: ParentNode;
   readonly slides: ReadonlyArray<HTMLElement>;
 }
 
@@ -52,25 +53,29 @@ function queryWithin(
 }
 
 /**
- * Wrap the given slides under a generated track element, inserted at the
- * first slide's original DOM position inside the section. Preserves order.
+ * Wrap the given slides under a generated track element. The track is
+ * inserted into the first slide's actual parent (which may be the section
+ * itself OR a descendant wrapper), then every slide is moved into the
+ * track while preserving document order. The section is used only as a
+ * safe fallback when the first slide has no parent attached.
  */
 function wrapSlidesUnderTrack(
   section: HTMLElement,
   slides: ReadonlyArray<HTMLElement>,
-): HTMLElement {
+): { track: HTMLElement; trackParent: ParentNode } {
   const doc = section.ownerDocument;
   const track = doc.createElement('div');
   track.classList.add(CLS.slidesTrack);
 
   const first = slides[0]!;
-  section.insertBefore(track, first);
+  const parent: ParentNode = first.parentNode ?? section;
+  parent.insertBefore(track, first);
 
   for (const slide of slides) {
     track.appendChild(slide);
   }
 
-  return track;
+  return { track, trackParent: parent };
 }
 
 export function mountStructure(
@@ -105,8 +110,8 @@ export function mountStructure(
         slideEl.classList.add(CLS.slide);
       }
 
-      const track = wrapSlidesUnderTrack(sectionEl, originals);
-      tracks.push({ track, section: sectionEl, slides: originals });
+      const { track, trackParent } = wrapSlidesUnderTrack(sectionEl, originals);
+      tracks.push({ track, section: sectionEl, trackParent, slides: originals });
 
       originals.forEach((slideEl, slideIndex) => {
         const slide: Slide = {
@@ -148,12 +153,12 @@ export function mountStructure(
     // Unwrap tracks: move slides back as direct children of the section,
     // preserving their original order, then remove the track element.
     for (const record of tracks) {
-      const { track, section, slides: originalSlides } = record;
-      if (track.parentNode === section) {
+      const { track, trackParent, slides: originalSlides } = record;
+      if (track.parentNode === trackParent) {
         for (const slideEl of originalSlides) {
-          section.insertBefore(slideEl, track);
+          trackParent.insertBefore(slideEl, track);
         }
-        section.removeChild(track);
+        trackParent.removeChild(track);
       }
       for (const slideEl of originalSlides) {
         slideEl.classList.remove(CLS.slide);

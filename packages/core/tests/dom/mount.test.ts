@@ -196,6 +196,38 @@ describe('mountStructure', () => {
     expect(mounted.slides[0]?.element.classList.contains('slide-a')).toBe(true);
   });
 
+  it('wraps slides even when they are nested inside wrapper elements', () => {
+    // Real-world markup often wraps slides in layout containers; the track
+    // must insert at the slides' actual parent, not always the section.
+    const nestedRoot = document.createElement('div');
+    nestedRoot.id = 'nested';
+    const sec = document.createElement('section');
+    sec.setAttribute('data-snapdeck-section', '');
+    const outer = document.createElement('div');
+    outer.classList.add('outer');
+    const inner = document.createElement('div');
+    inner.classList.add('inner');
+    const a = makeSlide('A', 'a');
+    const b = makeSlide('B', 'b');
+    inner.appendChild(a);
+    inner.appendChild(b);
+    outer.appendChild(inner);
+    sec.appendChild(outer);
+    nestedRoot.appendChild(sec);
+    document.body.appendChild(nestedRoot);
+
+    const mounted = mountStructure(nestedRoot, makeOptions());
+    const track = inner.querySelector(`.${CLS.slidesTrack}`);
+    expect(track).not.toBeNull();
+    expect(Array.from(track!.children)).toEqual([a, b]);
+
+    mounted.teardown();
+    // slides are back as direct children of inner; no stale track anywhere
+    expect(inner.querySelector(`.${CLS.slidesTrack}`)).toBeNull();
+    expect(inner.children[0]).toBe(a);
+    expect(inner.children[1]).toBe(b);
+  });
+
   it('treats blank data-anchor as null', () => {
     const s = container.querySelectorAll('[data-snapdeck-section]')[0] as HTMLElement;
     s.setAttribute('data-anchor', '   ');
